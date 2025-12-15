@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: eureka-server
+
+server:
+  port: ${SERVER_PORT:8761}
+
+eureka:
+  client:
+    # Don't register itself as a client
+    registerWithEureka: false
+    fetchRegistry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  instance:
+    hostname: ${EUREKA_HOSTNAME:localhost}
+  server:
+    # Disable self-preservation mode in development
+    enable-self-preservation: ${EUREKA_SELF_PRESERVATION:false}
+    eviction-interval-timer-in-ms: 10000
+
+logging:
+  level:
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO
+

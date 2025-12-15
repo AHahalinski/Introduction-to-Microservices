@@ -1,0 +1,87 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      # Enable service discovery through Eureka
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      # Define routes for microservices
+      routes:
+        # Route for Resource Service
+        - id: resource-service
+          uri: lb://resource-service
+          predicates:
+            - Path=/api/resources/**
+          filters:
+            - RewritePath=/api/resources/(?<segment>.*), /resources/${segment}
+
+        # Route for Song Service
+        - id: song-service
+          uri: lb://song-service
+          predicates:
+            - Path=/api/songs/**
+          filters:
+            - RewritePath=/api/songs/(?<segment>.*), /songs/${segment}
+
+        # Direct route to Resource Service (without /api prefix) - backward compatibility
+        - id: resource-service-direct
+          uri: lb://resource-service
+          predicates:
+            - Path=/resources/**
+
+        # Direct route to Song Service (without /api prefix) - backward compatibility
+        - id: song-service-direct
+          uri: lb://song-service
+          predicates:
+            - Path=/songs/**
+
+      # Global CORS configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            maxAge: 3600
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# Eureka Client Configuration
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: ${EUREKA_PREFER_IP:false}
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+# Logging Configuration
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.epam.microservices: DEBUG
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO
+
+# Management endpoints for monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    gateway:
+      enabled: true
+

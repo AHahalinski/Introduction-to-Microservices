@@ -19,6 +19,7 @@ import java.net.URI;
 /**
  * Client service for communicating with the Song Service.
  * Handles metadata creation and deletion operations.
+ * Uses Eureka service discovery and client-side load balancing.
  */
 @Service
 @Slf4j
@@ -28,12 +29,12 @@ public class SongServiceClient {
     private static final String ID_PARAM = "id";
 
     private final RestTemplate restTemplate;
-    private final String songServiceUrl;
+    private final String songServiceName;
 
     public SongServiceClient(RestTemplate restTemplate,
-                            @Value("${song-service.url}") String songServiceUrl) {
+                            @Value("${song-service.name}") String songServiceName) {
         this.restTemplate = restTemplate;
-        this.songServiceUrl = songServiceUrl;
+        this.songServiceName = songServiceName;
     }
 
     /**
@@ -91,8 +92,9 @@ public class SongServiceClient {
     }
 
     private URI buildSongsUri() {
+        // Use service name instead of hardcoded URL for load balancing
         return UriComponentsBuilder
-                .fromUriString(songServiceUrl)
+                .fromUriString("http://" + songServiceName)
                 .path(SONGS_ENDPOINT)
                 .build()
                 .toUri();
@@ -100,7 +102,7 @@ public class SongServiceClient {
 
     private URI buildDeleteUri(String ids) {
         return UriComponentsBuilder
-                .fromUriString(songServiceUrl)
+                .fromUriString("http://" + songServiceName)
                 .path(SONGS_ENDPOINT)
                 .queryParam(ID_PARAM, ids)
                 .build()
