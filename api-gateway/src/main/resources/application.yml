@@ -62,10 +62,16 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
+    # Increase registry fetch interval for faster discovery
+    registry-fetch-interval-seconds: 5
   instance:
-    prefer-ip-address: ${EUREKA_PREFER_IP:false}
-    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    # Always prefer IP address for proper service discovery
+    prefer-ip-address: true
+    # Instance ID includes port for multiple local instances
+    instance-id: ${spring.application.name}:${server.port}:${spring.application.instance_id:${random.value}}
+    # Faster heartbeat for quicker registration and deregistration
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
 
 # Logging Configuration
 logging:

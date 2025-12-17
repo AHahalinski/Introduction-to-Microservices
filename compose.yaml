@@ -8,8 +8,6 @@ services:
       - "8761:8761"
     environment:
       SERVER_PORT: 8761
-      EUREKA_HOSTNAME: eureka-server
-      EUREKA_SELF_PRESERVATION: "false"
 
   # API Gateway (Single entry point for all services)
   api-gateway:
@@ -21,8 +19,6 @@ services:
     environment:
       SERVER_PORT: 8080
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
-      EUREKA_INSTANCE_HOSTNAME: api-gateway
-      EUREKA_PREFER_IP: "true"
 
   # PostgreSQL Database for Resource Service
   resource-db:
@@ -70,8 +66,6 @@ services:
       SPRING_DATASOURCE_USERNAME: ${RESOURCE_DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${RESOURCE_DB_PASSWORD}
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
-      EUREKA_INSTANCE_HOSTNAME: resource-service
-      EUREKA_PREFER_IP: "true"
     depends_on:
       resource-db:
         condition: service_healthy
@@ -90,8 +84,6 @@ services:
       SPRING_DATASOURCE_USERNAME: ${SONG_DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${SONG_DB_PASSWORD}
       EUREKA_SERVER_URL: http://eureka-server:8761/eureka/
-      EUREKA_INSTANCE_HOSTNAME: song-service
-      EUREKA_PREFER_IP: "true"
       SERVER_PORT: 8083
     depends_on:
       song-db:

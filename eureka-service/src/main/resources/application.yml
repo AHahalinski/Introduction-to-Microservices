@@ -11,13 +11,15 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      defaultZone: http://localhost:${server.port}/eureka/
   instance:
-    hostname: ${EUREKA_HOSTNAME:localhost}
+    hostname: localhost
   server:
     # Disable self-preservation mode in development
-    enable-self-preservation: ${EUREKA_SELF_PRESERVATION:false}
-    eviction-interval-timer-in-ms: 10000
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 5000
+    response-cache-update-interval-ms: 5000
+    response-cache-auto-expiration-in-seconds: 10
 
 logging:
   level:
